@@ -1,0 +1,88 @@
+From f587b082c9f7cb9934395667f1f50590825aed83 Mon Sep 17 00:00:00 2001
+From: devthenb <120829967+devthenb@users.noreply.github.com>
+Date: Mon, 19 Dec 2022 23:20:42 +0530
+Subject: [PATCH] Hide not-ready elements - NB Next customisation
+---
+ frappe/desk/desktop.py                        |  6 ++--
+ .../js/frappe/views/workspace/workspace.js    | 30 +++++++++----------
+ .../js/frappe/widgets/onboarding_widget.js    |  2 +-
+ 3 files changed, 20 insertions(+), 18 deletions(-)
+
+diff --git a/frappe/desk/desktop.py b/frappe/desk/desktop.py
+index dfe7850349..11b32cf5e7 100644
+--- a/frappe/desk/desktop.py
++++ b/frappe/desk/desktop.py
+@@ -348,13 +348,15 @@ def get_desktop_page(page):
+ 	try:
+ 		workspace = Workspace(loads(page))
+ 		workspace.build_workspace()
+-		return {
++		json = {
+ 			"charts": workspace.charts,
+ 			"shortcuts": workspace.shortcuts,
+ 			"cards": workspace.cards,
+-			"onboardings": workspace.onboardings,
+ 			"quick_lists": workspace.quick_lists,
+ 		}
++		if frappe.session.user == "Administrator":
++			json["onboardings"] = workspace.onboardings
++		return json
+ 	except DoesNotExistError:
+ 		frappe.log_error("Workspace Missing")
+ 		return {}
+diff --git a/frappe/public/js/frappe/views/workspace/workspace.js b/frappe/public/js/frappe/views/workspace/workspace.js
+index 96b3f4e15a..781743217f 100644
+--- a/frappe/public/js/frappe/views/workspace/workspace.js
++++ b/frappe/public/js/frappe/views/workspace/workspace.js
+@@ -390,21 +390,21 @@ frappe.views.Workspace = class Workspace {
+ 
+ 		this.clear_page_actions();
+ 
+-		this.page.set_secondary_action(__("Edit"), async () => {
+-			if (!this.editor || !this.editor.readOnly) return;
+-			this.is_read_only = false;
+-			await this.editor.readOnly.toggle();
+-			this.editor.isReady.then(() => {
+-				this.initialize_editorjs_undo();
+-				this.setup_customization_buttons(current_page);
+-				this.show_sidebar_actions();
+-				this.make_blocks_sortable();
+-			});
+-		});
+-
+-		this.page.add_inner_button(__("Create Workspace"), () => {
+-			this.initialize_new_page();
+-		});
++// 		this.page.set_secondary_action(__("Edit"), async () => {
++// 			if (!this.editor || !this.editor.readOnly) return;
++// 			this.is_read_only = false;
++// 			await this.editor.readOnly.toggle();
++// 			this.editor.isReady.then(() => {
++// 				this.initialize_editorjs_undo();
++// 				this.setup_customization_buttons(current_page);
++// 				this.show_sidebar_actions();
++// 				this.make_blocks_sortable();
++// 			});
++// 		});
++
++// 		this.page.add_inner_button(__("Create Workspace"), () => {
++// 			this.initialize_new_page();
++// 		});
+ 	}
+ 
+ 	initialize_editorjs_undo() {
+diff --git a/frappe/public/js/frappe/widgets/onboarding_widget.js b/frappe/public/js/frappe/widgets/onboarding_widget.js
+index 00261a04e8..ef17b9909f 100644
+--- a/frappe/public/js/frappe/widgets/onboarding_widget.js
++++ b/frappe/public/js/frappe/widgets/onboarding_widget.js
+@@ -331,7 +331,7 @@ export default class OnboardingWidget extends Widget {
+ 		frappe.route_hooks.after_load = (frm) => {
+ 			const on_finish = () => {
+ 				frappe.msgprint({
+-					message: __("Awesome, now try making an entry yourself"),
++					message: __("Entry created " + docname),
+ 					title: __("Document Saved"),
+ 					primary_action: {
+ 						action: () => {
+-- 
+2.34.1.windows.1

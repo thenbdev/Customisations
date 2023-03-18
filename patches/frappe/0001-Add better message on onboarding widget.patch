@@ -1,0 +1,23 @@
+From f587b082c9f7cb9934395667f1f50590825aed83 Mon Sep 17 00:00:00 2001
+From: devthenb <120829967+devthenb@users.noreply.github.com>
+Date: Mon, 19 Dec 2022 23:20:42 +0530
+Subject: [PATCH] Add better message on onboarding widget
+---
+ .../js/frappe/widgets/onboarding_widget.js    |  2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/frappe/public/js/frappe/widgets/onboarding_widget.js b/frappe/public/js/frappe/widgets/onboarding_widget.js
+index 00261a04e8..ef17b9909f 100644
+--- a/frappe/public/js/frappe/widgets/onboarding_widget.js
++++ b/frappe/public/js/frappe/widgets/onboarding_widget.js
+@@ -331,7 +331,7 @@ export default class OnboardingWidget extends Widget {
+ 		frappe.route_hooks.after_load = (frm) => {
+ 			const on_finish = () => {
+ 				frappe.msgprint({
+-					message: __("Awesome, now try making an entry yourself"),
++					message: __("Entry created " + docname),
+ 					title: __("Document Saved"),
+ 					primary_action: {
+ 						action: () => {
+-- 
+2.34.1.windows.1

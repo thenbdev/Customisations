@@ -1,16 +1,17 @@
-From f587b082c9f7cb9934395667f1f50590825aed83 Mon Sep 17 00:00:00 2001
+From 7fb5752c772fb71673433de6fe24c0e6fc1bbe21 Mon Sep 17 00:00:00 2001
 From: devthenb <120829967+devthenb@users.noreply.github.com>
 Date: Mon, 19 Dec 2022 23:20:42 +0530
 Subject: [PATCH] Show onboarding charts to admin only
+
 ---
- frappe/desk/desktop.py                        |  6 ++--
- 1 files changed, 4 insertions(+), 2 deletions(-)
+ frappe/desk/desktop.py | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/frappe/desk/desktop.py b/frappe/desk/desktop.py
-index dfe7850349..11b32cf5e7 100644
+index b50cf0357a..d36afd01f0 100644
 --- a/frappe/desk/desktop.py
 +++ b/frappe/desk/desktop.py
-@@ -348,13 +348,15 @@ def get_desktop_page(page):
+@@ -360,14 +360,16 @@ def get_desktop_page(page):
  	try:
  		workspace = Workspace(loads(page))
  		workspace.build_workspace()
@@ -21,6 +22,7 @@ index dfe7850349..11b32cf5e7 100644
  			"cards": workspace.cards,
 -			"onboardings": workspace.onboardings,
  			"quick_lists": workspace.quick_lists,
+ 			"number_cards": workspace.number_cards,
  		}
 +		if frappe.session.user == "Administrator":
 +			json["onboardings"] = workspace.onboardings
@@ -30,3 +32,4 @@ index dfe7850349..11b32cf5e7 100644
  		return {}
 -- 
 2.34.1.windows.1
+

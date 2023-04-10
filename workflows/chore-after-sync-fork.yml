@@ -3,7 +3,7 @@ on:
   push:
     branches: [develop]
 env:
-  # DEFAULT_BRANCH: "develop"
+  DEFAULT_BRANCH: "develop"
   UPDATED_BRANCH: "develop-updated"
   PATCH_DIR: ${{github.event.repository.name}}/customisation/patches/${{github.event.repository.name}}
 
@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          ref: ${{ env.DEFAULT_BRANCH }}
 
       - name: Checkout customisations
         uses: actions/checkout@v3
@@ -69,6 +71,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ env.DEFAULT_BRANCH }}
       - run: git checkout -b ${{ env.UPDATED_BRANCH }}
 
       - name: Find and Replace links (direct/docs, youtube)

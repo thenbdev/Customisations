@@ -9,13 +9,15 @@ env:
 
 
 jobs:
-  apply-old-patches:
+  nbnext:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
           ref: ${{ env.DEFAULT_BRANCH }}
+      - run: git checkout -b ${{ env.UPDATED_BRANCH }}
+
 
       - name: Checkout customisations
         uses: actions/checkout@v3
@@ -25,6 +27,7 @@ jobs:
 
       - name: Apply patches
         # if: hashFiles('$PATCH_DIR')!=''  #TODO: why is this not working
+        continue-on-error: true
         run: |
           shopt -s nullglob
 
@@ -57,7 +60,8 @@ jobs:
 
       - name: Cleanup
         run: rm -rf customisation
-      - name: Commit and Push
+
+      - name: Commit and Push - Patches
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           push_options: '--force'
@@ -66,23 +70,12 @@ jobs:
           commit_message: "Automatically applied patches"
 
 
-  replacements:
-    if: always()
-    needs: apply-old-patches
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ env.DEFAULT_BRANCH }}
-      - run: git checkout -b ${{ env.UPDATED_BRANCH }}
-
       - name: Find and Replace links (direct/docs, youtube)
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: (erpnext.com|www.youtube.com)
           replace: "nbnextlinks"
           regex: true
-
 
       - name: Find and Replace name
         uses: jacobtomlinson/gha-find-replace@v3
@@ -111,14 +104,13 @@ jobs:
           wget -N http://thenb.nbnext.in/assets/erpnext/images/erpnext-logo.png
           wget -N http://thenb.nbnext.in/assets/erpnext/images/erpnext-favicon.svg
 
-
       - name: Restore unwanted changes
         run: |
           git status
           git restore --source=HEAD --staged --worktree -- .github
           git status
 
-      - name: Commit and Push
+      - name: Commit and Push - Replacements
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           push_options: '--force'

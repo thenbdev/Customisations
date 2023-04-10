@@ -3,24 +3,64 @@ on: [push, pull_request]
 jobs:
   apply-old-patches:
     runs-on: ubuntu-latest
+    env:
+      PATCH_DIR: ${{github.event.repository.name}}/customisation/patches/${{github.event.repository.name}}
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-      # Apply patches given the repo (frappe/erpnext/hrms/payments/etc...)
-      - name: Apply new patches
+      - name: Checkout customisations
+        uses: actions/checkout@v3
+        with:
+          repository: thenbdev/Customisations
+          path: customisation
+
+      - name: Apply patches
+        # if: hashFiles('$PATCH_DIR')!=''  #TODO: why is this not working
         run: |
-          ls
+          shopt -s nullglob
 
+          cd ..
+          if [ -d "$PATCH_DIR" ]; then
+            echo "Patches found in $PATCH_DIR:"
+            echo "$PATCH_DIR"/*.patch
+            for patch in "$PATCH_DIR"/*.patch; do
+              if [ -f "$patch" ]; then
+                echo "Starting $patch"
+                if git apply --directory=${{github.event.repository.name}} --ignore-space-change --verbose --check "$patch"; then
+                  echo "Applying patch $(basename "${patch%.*}")"
+                  git apply --directory=${{github.event.repository.name}} --ignore-space-change --verbose "$patch" || exit 1
+                  echo "Patch $(basename "${patch%.*}") applied"
+                else
+                  echo "Partially applied, or not applied at all"
+                  if git apply --directory=${{github.event.repository.name}} --ignore-space-change --verbose --reverse --check "$patch"; then
+                      git apply --directory=${{github.event.repository.name}} --ignore-space-change --reject --whitespace=fix "$patch" || exit 1
+                      echo "Applied patch ${patch##*/}"
+                  else
+                    echo "Failed to apply patch $(basename "${patch%.*}"). Check if there is a confict."
+                    # exit 1
+                  fi
+                fi
+              fi
+            done
+          else
+            echo "Patch directory $PATCH_DIR not found."
+          fi
+
+      - name: Cleanup
+        run: rm -rf customisation
       - name: Commit and Push
         uses: stefanzweifel/git-auto-commit-action@v4
 
 
   replacements:
+    if: always()
+    needs: apply-old-patches
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: Find and Replace links (direct, youtube, docs)
+      - name: Find and Replace links (direct/docs, youtube)
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: (erpnext.com|www.youtube.com)
@@ -35,15 +75,25 @@ jobs:
           replace: "NB Next"
           regex: true
 
+      # Build fixes
+      # TODO: Check this in translations
+      - name: Module build fixes
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          exclude: "**/translations/*"
+          find: "NB Next Integrations"
+          replace: "ERPNext Integrations"
+          regex: false
 
-      # Todo: change the download/logo location to customsation repo
+      # TODO: change the download/logo location to customsation repo
       - name: Find and Replace logo
+        if: ${{ hashFiles('**/erpnext-logo.*') }}
+        # TODO: figure out where is the file and replace it. currently static handling
         run: |
           cd erpnext/public/images
-          rm erpnext-logo.svg erpnext-logo.png erpnext-favicon.svg
-          wget http://thenb.nbnext.in/assets/erpnext/images/erpnext-logo.svg
-          wget http://thenb.nbnext.in/assets/erpnext/images/erpnext-logo.png
-          wget http://thenb.nbnext.in/assets/erpnext/images/erpnext-favicon.svg
+          wget -N http://thenb.nbnext.in/assets/erpnext/images/erpnext-logo.svg
+          wget -N http://thenb.nbnext.in/assets/erpnext/images/erpnext-logo.png
+          wget -N http://thenb.nbnext.in/assets/erpnext/images/erpnext-favicon.svg
 
 
       - name: Restore unwanted changes

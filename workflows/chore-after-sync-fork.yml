@@ -63,6 +63,7 @@ jobs:
           push_options: '--force'
           branch: ${{ env.UPDATED_BRANCH }}
           create_branch: true
+          commit_message: "Automatically applied patches"
 
 
   replacements:
@@ -123,3 +124,4 @@ jobs:
           push_options: '--force'
           branch: ${{ env.UPDATED_BRANCH }}
           create_branch: true
+          commit_message: "NB Next Replacements Automated commit"

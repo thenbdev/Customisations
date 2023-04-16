@@ -78,20 +78,20 @@ jobs:
           replace: "nbnextlinks"
           regex: true
 
-      - name: Find and Replace name
+      - name: Find and Replace erpnext(without spaces)
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           # Replace all code ERPNext to NBNext, so space doesn't cause build errors
-          find: (ERPNext(?!\S)) 
+          find: "erpnext/i"
           replace: "NBNext"
-          regex: true
+          regex: false
 
-      - name: Find and Replace name
+      - name: Find and Replace erp next (with space)
         uses: jacobtomlinson/gha-find-replace@v3
         with:
-          find: (ERP Next|ERPNext)
+          find: "erp next/i"
           replace: "NB Next"
-          regex: true
+          regex: false
 
       # Build fixes
       # TODO: Check this in translations

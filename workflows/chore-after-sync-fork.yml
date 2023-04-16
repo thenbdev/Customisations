@@ -28,6 +28,7 @@ jobs:
       - name: Apply patches
         # if: hashFiles('$PATCH_DIR')!=''  #TODO: why is this not working
         continue-on-error: true
+        # Remove the exit 1 and then remove continue-on-errors in here
         run: |
           shopt -s nullglob
 
@@ -75,6 +76,14 @@ jobs:
         with:
           find: (erpnext.com|www.youtube.com)
           replace: "nbnextlinks"
+          regex: true
+
+      - name: Find and Replace name
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          # Replace all code ERPNext to NBNext, so space doesn't cause build errors
+          find: (ERPNext(?!\S)) 
+          replace: "NBNext"
           regex: true
 
       - name: Find and Replace name

@@ -126,3 +126,29 @@ jobs:
         with:
           branch: ${{ env.UPDATED_BRANCH }}
           commit_message: "NB Next Replacements Automated commit"
+
+
+      # Rename files and folders
+      - name: Rename erpnext to nbnext
+        run: |
+          if [ -e *erpnext* ]; then
+            mv *erpnext* $(echo *erpnext* | sed 's/erpnext/nbnext/')
+          fi
+
+      - name: Rename erp_next to nb_next
+        run: |
+          if [ -e *erp_next* ]; then
+            mv *erp_next* $(echo *erp_next* | sed 's/erp_next/nb_next/')
+          fi
+
+      - name: Rename Frappe to Thenb
+        run: |
+          if [ -e *frappe* ]; then
+            mv *frappe* $(echo *frappe* | sed 's/frappe/thenb/')
+          fi
+
+      - name: Commit and Push - rename files and folders
+        uses: thenbdev/cleanup-and-push@main
+        with:
+          branch: ${{ env.UPDATED_BRANCH }}
+          commit_message: "NB Next Replacements Rename files and folders"

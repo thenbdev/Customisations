@@ -63,13 +63,10 @@ jobs:
         run: rm -rf customisation
 
       - name: Commit and Push - Patches
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: thenbdev/cleanup-and-push@main
         with:
-          push_options: '--force'
           branch: ${{ env.UPDATED_BRANCH }}
-          create_branch: true
           commit_message: "Automatically applied patches"
-
 
       - name: Find and Replace links (direct/docs, youtube)
         uses: jacobtomlinson/gha-find-replace@v3
@@ -82,16 +79,27 @@ jobs:
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           # Replace all code ERPNext to NBNext, so space doesn't cause build errors
-          find: "erpnext/i"
+          # Todo: /i doesn't work, make it case insensitive
+          find: "(erpnext|ERPNext|ERPnext|erpNext)"  
           replace: "NBNext"
-          regex: false
+          regex: true
 
       - name: Find and Replace erp next (with space)
         uses: jacobtomlinson/gha-find-replace@v3
         with:
-          find: "erp next/i"
+          # Todo: /i doesn't work, make it case insensitive
+          find: "(erp next|ERP next|ERP Next|erp Next)"
           replace: "NB Next"
-          regex: false
+          regex: true
+
+      - name: Find and Replace frappe
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          # Replace all code ERPNext to NBNext, so space doesn't cause build errors
+          # Todo: /i doesn't work, make it case insensitive
+          find: "(frappe|Frappe)"  
+          replace: "theNBdev"
+          regex: true
 
       # Build fixes
       # TODO: Check this in translations
@@ -113,16 +121,8 @@ jobs:
           wget -N http://thenb.nbnext.in/assets/erpnext/images/erpnext-logo.png
           wget -N http://thenb.nbnext.in/assets/erpnext/images/erpnext-favicon.svg
 
-      - name: Restore unwanted changes
-        run: |
-          git status
-          git restore --source=HEAD --staged --worktree -- .github
-          git status
-
       - name: Commit and Push - Replacements
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: thenbdev/cleanup-and-push@main
         with:
-          push_options: '--force'
           branch: ${{ env.UPDATED_BRANCH }}
-          create_branch: true
           commit_message: "NB Next Replacements Automated commit"

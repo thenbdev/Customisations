@@ -6,6 +6,7 @@ env:
   DEFAULT_BRANCH: "develop"
   UPDATED_BRANCH: "develop-updated"
   PATCH_DIR: ${{github.event.repository.name}}/customisation/patches/${{github.event.repository.name}}
+  STATIC_DIR: customisation/static/${{github.event.repository.name}}
 
 
 jobs:
@@ -19,7 +20,7 @@ jobs:
       - run: git checkout -b ${{ env.UPDATED_BRANCH }}
 
 
-      - name: Checkout customisations
+      - name: Checkout customisations for applying patches
         uses: actions/checkout@v3
         with:
           repository: thenbdev/Customisations
@@ -59,7 +60,7 @@ jobs:
             echo "Patch directory $PATCH_DIR not found."
           fi
 
-      - name: Cleanup
+      - name: Cleanup customisation
         run: rm -rf customisation
 
       - name: Commit and Push - Patches
@@ -190,38 +191,56 @@ jobs:
 
 
 
-      # TODO: change the download/logo location to customsation repo
-      - name: Find and Replace logo
-        if: ${{ hashFiles('**/erpnext-logo.*') }}
-        # TODO: figure out where is the file and replace it. currently static handling
-        run: |
-          cd erpnext/public/images
-          wget -N http://thenb.nbnext.in/assets/erpnext/images/erpnext-logo.svg
-          wget -N http://thenb.nbnext.in/assets/erpnext/images/erpnext-logo.png
-          wget -N http://thenb.nbnext.in/assets/erpnext/images/erpnext-favicon.svg
-
-      - name: Commit and Push - Replacements
-        uses: thenbdev/cleanup-and-push@main
-        with:
-          branch: ${{ env.UPDATED_BRANCH }}
-          commit_message: "NB Next Replacements Logo commit"
-
-
       # Rename files and folders
       - name: Rename erpnext to nbnext
         run: |
-          if [ -e *erpnext* ]; then
-            mv *erpnext* $(echo *erpnext* | sed 's/erpnext/nbnext/')
-          fi
+          find . -depth -not -path '.git/*' -name "*erpnext*" -execdir bash -c 'mv "$1" "${1//erpnext/nbnext}"' bash {} \;
 
       - name: Rename erp_next to nb_next
         run: |
-          if [ -e *erp_next* ]; then
-            mv *erp_next* $(echo *erp_next* | sed 's/erp_next/nb_next/')
-          fi
+          find . -depth -not -path '.git/*' -name "*erp_next*" -execdir bash -c 'mv "$1" "${1//erp_next/nb_next}"' bash {} \;
 
       - name: Commit and Push - rename files and folders
         uses: thenbdev/cleanup-and-push@main
         with:
           branch: ${{ env.UPDATED_BRANCH }}
           commit_message: "NB Next Replacements Rename files and folders"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      - name: Checkout customisations for static data
+        uses: actions/checkout@v3
+        with:
+          repository: thenbdev/Customisations
+          path: customisation
+
+      - name: Find and Replace static files
+        run: |
+          shopt -s nullglob
+
+          if [ -d "$STATIC_DIR" ]; then
+            echo "Static found in $STATIC_DIR"
+            cp -r $STATIC_DIR .
+          else
+            echo "Patch directory $STATIC_DIR not found."
+          fi
+
+      - name: Cleanup customisation
+        run: rm -rf customisation
+
+      - name: Commit and Push - Static files
+        uses: thenbdev/cleanup-and-push@main
+        with:
+          branch: ${{ env.UPDATED_BRANCH }}
+          commit_message: "NB Next Replacements Static files"

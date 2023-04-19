@@ -127,14 +127,14 @@ jobs:
         with:
           find: "erpnext"  
           replace: "nbnext"
+          words_only: true
 
       - name: Find and Replace erp next (with space)
-        uses: jacobtomlinson/gha-find-replace@v3
+        uses: thenbdev/find-and-replace@main
         with:
           # Todo: /i doesn't work, make it case insensitive
-          find: "(erp next|ERP next|ERP Next|erp Next)"
+          find: "erp next"
           replace: "NB Next"
-          regex: true
 
       # TODO: Check this in translations
       - name: Module build fixes
@@ -144,6 +144,20 @@ jobs:
           find: "NB Next Integrations"
           replace: "ERPNext Integrations"
           regex: false
+
+      - name: Find and Replace undo repalce erpnext imports - 1
+        uses: thenbdev/find-and-replace@main
+        with:
+          find: "from nbnext"
+          replace: "from erpnext"
+          words_only: true
+
+      - name: Find and Replace undo repalce erpnext imports - 2
+        uses: thenbdev/find-and-replace@main
+        with:
+          find: "import nbnext"
+          replace: "import erpnext"
+          words_only: true
 
       - name: Commit and Push - Replacements
         uses: thenbdev/cleanup-and-push@main
@@ -191,19 +205,19 @@ jobs:
 
 
       # Rename files and folders
-      - name: Rename erpnext to nbnext
-        run: |
-          find . -depth -not -path '.git/*' -name "*erpnext*" -execdir bash -c 'mv "$1" "${1//erpnext/nbnext}"' bash {} \;
+      # - name: Rename erpnext to nbnext
+      #   run: |
+      #     find . -depth -not -path '.git/*' -name "*erpnext*" -execdir bash -c 'mv "$1" "${1//erpnext/nbnext}"' bash {} \;
 
-      - name: Rename erp_next to nb_next
-        run: |
-          find . -depth -not -path '.git/*' -name "*erp_next*" -execdir bash -c 'mv "$1" "${1//erp_next/nb_next}"' bash {} \;
+      # - name: Rename erp_next to nb_next
+      #   run: |
+      #     find . -depth -not -path '.git/*' -name "*erp_next*" -execdir bash -c 'mv "$1" "${1//erp_next/nb_next}"' bash {} \;
 
-      - name: Commit and Push - rename files and folders
-        uses: thenbdev/cleanup-and-push@main
-        with:
-          branch: ${{ env.UPDATED_BRANCH }}
-          commit_message: "NB Next Replacements Rename files and folders"
+      # - name: Commit and Push - rename files and folders
+      #   uses: thenbdev/cleanup-and-push@main
+      #   with:
+      #     branch: ${{ env.UPDATED_BRANCH }}
+      #     commit_message: "NB Next Replacements Rename files and folders"
 
 
 
@@ -230,7 +244,7 @@ jobs:
 
           if [ -d "$STATIC_DIR" ]; then
             echo "Static found in $STATIC_DIR"
-            cp -r $STATIC_DIR .
+            cp -r $STATIC_DIR/* .
           else
             echo "Patch directory $STATIC_DIR not found."
           fi

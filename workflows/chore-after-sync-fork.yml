@@ -94,7 +94,7 @@ jobs:
       - name: Find and Replace links (direct/docs, youtube)
         uses: jacobtomlinson/gha-find-replace@v3
         with:
-          find: (erpnext.com|www.youtube.com)
+          find: (erpnext.com|youtube.com)
           replace: "nbnextlinks"
           regex: true
 
@@ -126,8 +126,7 @@ jobs:
         uses: thenbdev/find-and-replace@main
         with:
           find: "erpnext"  
-          replace: "NBNext"
-          words_only: true
+          replace: "nbnext"
 
       - name: Find and Replace erp next (with space)
         uses: jacobtomlinson/gha-find-replace@v3

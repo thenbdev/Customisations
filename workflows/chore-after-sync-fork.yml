@@ -122,53 +122,102 @@ jobs:
 
 
 
-      - name: Find and Replace erpnext(without spaces)
-        uses: thenbdev/find-and-replace@main
-        with:
-          find: "erpnext"  
-          replace: "nbnext"
-          words_only: true
+      # - name: Find and Replace erpnext(without spaces)
+      #   uses: thenbdev/find-and-replace@main
+      #   with:
+      #     find: "erpnext"  
+      #     replace: "nbnext"
+      #     words_only: true
 
-      - name: Find and Replace erp next (with space)
-        uses: thenbdev/find-and-replace@main
-        with:
-          # Todo: /i doesn't work, make it case insensitive
-          find: "erp next"
-          replace: "NB Next"
-
-      # TODO: Check this in translations
-      - name: Module build fixes
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          exclude: "**/translations/*"
-          find: "NB Next Integrations"
-          replace: "ERPNext Integrations"
-          regex: false
-
-      - name: Find and Replace undo repalce erpnext imports - 1
-        uses: thenbdev/find-and-replace@main
-        with:
-          find: "from nbnext"
-          replace: "from erpnext"
-          words_only: true
-
-      - name: Find and Replace undo repalce erpnext imports - 2
-        uses: thenbdev/find-and-replace@main
-        with:
-          find: "import nbnext"
-          replace: "import erpnext"
-          words_only: true
-
-      - name: Commit and Push - Replacements
-        uses: thenbdev/cleanup-and-push@main
-        with:
-          branch: ${{ env.UPDATED_BRANCH }}
-          commit_message: "NB Next Replacements ERP Next to NB Next"
+      # - name: Find and Replace erp next (with space)
+      #   uses: thenbdev/find-and-replace@main
+      #   with:
+      #     # Todo: /i doesn't work, make it case insensitive
+      #     find: "erp next"
+      #     replace: "NB Next"
 
 
 
 
 
+      # # TODO: Check this in translations
+      # - name: Module build fixes
+      #   uses: jacobtomlinson/gha-find-replace@v3
+      #   with:
+      #     exclude: "**/translations/*"
+      #     find: "NB Next Integrations"
+      #     replace: "ERPNext Integrations"
+      #     regex: false
+
+      # # TODO: Check this in translations
+      # - name: Module build fixes
+      #   uses: jacobtomlinson/gha-find-replace@v3
+      #   with:
+      #     exclude: "**/translations/*"
+      #     find: "NBNext Integrations"
+      #     replace: "ERPNext Integrations"
+      #     regex: false
+
+      # # TODO: Check this in translations
+      # - name: Module build fixes
+      #   uses: jacobtomlinson/gha-find-replace@v3
+      #   with:
+      #     exclude: "**/translations/*"
+      #     find: "nbnext_integrations"
+      #     replace: "erpnext_integrations"
+      #     regex: false
+
+      #  # TODO: Check this in translations
+      # - name: Module build fixes
+      #   uses: jacobtomlinson/gha-find-replace@v3
+      #   with:
+      #     exclude: "**/translations/*"
+      #     find: "NBNext Settings"
+      #     replace: "ERPNext Settings"
+      #     regex: false
+
+      #  # TODO: Check this in translations
+      # - name: Module build fixes
+      #   uses: jacobtomlinson/gha-find-replace@v3
+      #   with:
+      #     exclude: "**/translations/*"
+      #     find: "NBNext Settings"
+      #     replace: "ERPNext Settings"
+      #     regex: false
+
+      # # TODO: Check this in translations
+      # - name: Module build fixes
+      #   uses: jacobtomlinson/gha-find-replace@v3
+      #   with:
+      #     exclude: "**/translations/*"
+      #     find: "nbnext_settings"
+      #     replace: "erpnext_settings"
+      #     regex: false
+
+
+
+
+
+
+      # - name: Find and Replace undo repalce erpnext imports - 1
+      #   uses: thenbdev/find-and-replace@main
+      #   with:
+      #     find: "from nbnext"
+      #     replace: "from erpnext"
+      #     words_only: true
+
+      # - name: Find and Replace undo repalce erpnext imports - 2
+      #   uses: thenbdev/find-and-replace@main
+      #   with:
+      #     find: "import nbnext"
+      #     replace: "import erpnext"
+      #     words_only: true
+
+      # - name: Commit and Push - Replacements
+      #   uses: thenbdev/cleanup-and-push@main
+      #   with:
+      #     branch: ${{ env.UPDATED_BRANCH }}
+      #     commit_message: "NB Next Replacements ERP Next to NB Next"
 
 
 
@@ -178,19 +227,24 @@ jobs:
 
 
 
-      - name: Find and Replace Frappe
-        uses: thenbdev/find-and-replace@main
-        with:
-          find: "Frappe"
-          replace: "theNB"
-          words_only: true
-          ignore_case: false
 
-      - name: Commit and Push - Replacements
-        uses: thenbdev/cleanup-and-push@main
-        with:
-          branch: ${{ env.UPDATED_BRANCH }}
-          commit_message: "NB Next Replacements - Rename Frappe to theNB"
+
+
+
+
+      # - name: Find and Replace Frappe
+      #   uses: thenbdev/find-and-replace@main
+      #   with:
+      #     find: "Frappe"
+      #     replace: "theNB"
+      #     words_only: true
+      #     ignore_case: false
+
+      # - name: Commit and Push - Replacements
+      #   uses: thenbdev/cleanup-and-push@main
+      #   with:
+      #     branch: ${{ env.UPDATED_BRANCH }}
+      #     commit_message: "NB Next Replacements - Rename Frappe to theNB"
 
 
 
